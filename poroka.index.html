@@ -1,141 +1,131 @@
 <!DOCTYPE html>
 <html lang="sl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RSVP Poroka Jana & Sašo</title>
-<style>
-body { font-family: Arial,sans-serif; background:#f8f6f2; display:flex; justify-content:center; align-items:center; min-height:100vh; margin:0; }
-.card { background:white; padding:30px; border-radius:20px; box-shadow:0 10px 30px rgba(0,0,0,0.1); width:100%; max-width:500px; }
-h1,h2 { text-align:center; }
-button { padding:10px 15px; border:none; border-radius:10px; background:black; color:white; cursor:pointer; width:100%; margin-top:15px; }
-input, select, textarea { width:100%; padding:8px; margin:5px 0 10px 0; border-radius:8px; border:1px solid #ccc; }
-.hidden { display:none; }
-.menu-select { margin-bottom:10px; }
-.note { font-style: italic; color: #555; margin-bottom: 15px; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kontakt</title>
+
+  <!-- EmailJS -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script>
+    (function(){
+      emailjs.init("rMouEV0MzdrboRa2w");
+    })();
+  </script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .contact-container {
+      background: white;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    textarea {
+      resize: none;
+      height: 120px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #000;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #333;
+    }
+
+    .success-message {
+      display: none;
+      text-align: center;
+      color: green;
+      margin-top: 15px;
+    }
+
+    .error-message {
+      display: none;
+      text-align: center;
+      color: red;
+      margin-top: 15px;
+    }
+  </style>
 </head>
+
 <body>
-<div class="card">
 
-<!-- STEP 1: Imena odraslih -->
-<div id="step1">
-<h1>Potrditev udeležbe</h1>
-<label>Ime in priimek odraslih gostov (ločeno z vejico)</label>
-<textarea id="guestNames" placeholder="Janez Novak, Ana Horvat"></textarea>
-<button onclick="attend(true)">Se udeležim</button>
-<button onclick="attend(false)" style="background:#777;margin-top:10px">Ne pridem</button>
-</div>
+  <div class="contact-container">
+    <h2>Kontaktirajte nas</h2>
 
-<!-- STEP 2: Število otrok -->
-<div id="step2" class="hidden">
-<h2>Koliko otrok pride?</h2>
-<label>Število otrok</label>
-<input type="number" id="children" min="0" value="0">
-<p class="note">Otroci bodo imeli svoj meni.</p>
-<button onclick="goToMenus()">Nadaljuj</button>
-</div>
+    <form id="contact-form">
+      <input type="text" name="user_name" placeholder="Vaše ime" required>
+      <input type="email" name="user_email" placeholder="Vaš email" required>
+      <textarea name="message" placeholder="Vaše sporočilo" required></textarea>
+      <button type="submit">Pošlji sporočilo</button>
+    </form>
 
-<!-- STEP 3: Izbira menijev za odrasle -->
-<div id="step3" class="hidden">
-<h2>Izberi meni za odrasle</h2>
-<div id="menuOptions"></div>
-<button onclick="submitForm()">Potrdi</button>
-</div>
+    <div class="success-message" id="success">
+      ✅ Sporočilo je bilo uspešno poslano!
+    </div>
 
-<!-- STEP 4: Hvala -->
-<div id="step4" class="hidden">
-<h2>Hvala za odgovor ❤️</h2>
-<p id="finalMessage"></p>
-</div>
+    <div class="error-message" id="error">
+      ❌ Prišlo je do napake. Poskusite znova.
+    </div>
+  </div>
 
-<script>
-let attendance=false;
-let adultNames=[];
+  <script>
+    document.getElementById('contact-form')
+      .addEventListener('submit', function(event) {
+        event.preventDefault();
 
-function attend(value){
-  attendance=value;
-  const namesText = document.getElementById('guestNames').value.trim();
-  if(value && !namesText){ alert('Vpišite imena odraslih gostov'); return; }
-  
-  adultNames = namesText.split(',').map(n => n.trim()).filter(n => n);
-  if(value && adultNames.length===0){ alert('Vpišite vsaj eno ime odraslega gosta'); return; }
+        const successMsg = document.getElementById("success");
+        const errorMsg = document.getElementById("error");
 
-  if(value){
-    document.getElementById('step1').classList.add('hidden');
-    document.getElementById('step2').classList.remove('hidden');
-  } else {
-    document.getElementById('step1').classList.add('hidden');
-    document.getElementById('step4').classList.remove('hidden');
-    document.getElementById('finalMessage').innerText='Žal nama je, da vas ne bo.';
-  }
-}
+        successMsg.style.display = "none";
+        errorMsg.style.display = "none";
 
-function goToMenus(){
-  let children = parseInt(document.getElementById('children').value);
-  if(children < 0){ alert('Vnesi 0 ali več'); return; }
-
-  const container = document.getElementById('menuOptions');
-  container.innerHTML = '';
-
-  adultNames.forEach((name, i)=>{
-    const div = document.createElement('div');
-    div.className = 'menu-select-wrapper';
-    
-    const label = document.createElement('label');
-    label.innerText = 'Meni za ' + name;
-    div.appendChild(label);
-
-    const select = document.createElement('select');
-    select.className='menu-select';
-    select.id='adultMenu'+i;
-
-    const optionDefault = document.createElement('option');
-    optionDefault.value='';
-    optionDefault.innerText='Izberi meni';
-    optionDefault.disabled = true;
-    optionDefault.selected = true;
-    select.appendChild(optionDefault);
-
-    ['Mesni','Ribji','Vegetarijanski'].forEach(menu=>{
-      const opt = document.createElement('option');
-      opt.value=menu;
-      opt.innerText=menu;
-      select.appendChild(opt);
-    });
-
-    div.appendChild(select);
-    container.appendChild(div);
-  });
-
-  document.getElementById('step2').classList.add('hidden');
-  document.getElementById('step3').classList.remove('hidden');
-}
-
-function submitForm(){
-  let menus=[];
-  for(let i=0;i<adultNames.length;i++){
-    const val = document.getElementById('adultMenu'+i).value;
-    if(!val){ alert('Izberi meni za vsakega odraslega'); return; }
-    menus.push(val);
-  }
-
-  let children = parseInt(document.getElementById('children').value);
-
-  // pripravi vsebino e-maila
-  const subject = "RSVP Poroka Jana & Sašo";
-  const body = `Odrasli: ${adultNames.join(', ')}
-Otroci: ${children}
-Meni: ${menus.join(', ')}`;
-
-  // odpri predizpolnjen e-mail
-  window.location.href = `mailto:jana.zec@outlook.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-
-  document.getElementById('step3').classList.add('hidden');
-  document.getElementById('step4').classList.remove('hidden');
-  document.getElementById('finalMessage').innerText='Veseliva se vaše udeležbe. Hvala za odgovor!';
-}
-</script>
+        emailjs.sendForm('default_service', 'template_6vrea4r', this)
+          .then(function() {
+            successMsg.style.display = "block";
+            document.getElementById("contact-form").reset();
+          }, function(error) {
+            errorMsg.style.display = "block";
+            console.log('FAILED...', error);
+          });
+      });
+  </script>
 
 </body>
 </html>
